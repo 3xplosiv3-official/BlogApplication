@@ -14,6 +14,10 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str = "sqlite://sqlite3.db"
 
+    SECRET_KEY: str = 'ENIGMALANCEVERYHIGHSECURITYKEY'
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 1 day
+
     class Config:
         case_sensitive = True
         env_file = ".env"
