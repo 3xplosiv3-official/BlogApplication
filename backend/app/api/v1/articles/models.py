@@ -20,11 +20,13 @@ class Article(AbstractBaseModel, TimestampMixin):
 
     Attributes:
     - title: The title or headline of the article.
+    - description: The preview description or short content of the article.
     - content: The main content or body of the article.
     - comments: Reverse relation to the comments associated with the article.
     """
 
     title = fields.CharField(max_length=255)
+    description = fields.CharField(max_length=155)
     content = fields.TextField()
     comments = fields.ReverseRelation["Comment"]
 

@@ -9,6 +9,7 @@ to predefined specifications.
 """
 
 from typing import List
+from datetime import datetime
 
 from pydantic import BaseModel
 
@@ -19,10 +20,12 @@ class ArticleBase(BaseModel):
 
      Attributes:
          title (str): The title of the article.
+         description (str): The description of an article.
          content (str): The main content/body of the article.
      """
 
     title: str
+    description: str
     content: str
 
 
@@ -48,9 +51,13 @@ class ArticleInDB(ArticleBase):
 
     Attributes:
         id (int): The unique identifier of the article.
+        created_at (datetime):  The timestamp of the article when it was created.
+        updated_at (datetime):  The timestamp of the article when it was updated.
     """
 
     id: int
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         """
