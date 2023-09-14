@@ -24,7 +24,7 @@ async def article_exists(article_id: int) -> bool:
     return await Article.filter(id=article_id).exists()
 
 
-async def get_all_articles(skip: int = 0, limit: int = 10):
+async def get_all_articles(skip: int = 1, limit: int = 10):
     """
     Retrieve a limited set of articles, supporting pagination.
 
@@ -36,7 +36,13 @@ async def get_all_articles(skip: int = 0, limit: int = 10):
     :rtype: tuple
     """
 
-    articles = await Article.all().offset(skip * limit).limit(limit)
+    articles = await Article.all().order_by(
+        '-id'
+    ).offset(
+        (skip - 1) * limit
+    ).limit(
+        limit
+    )
 
     total = await Article.all().count()
     return articles, total
