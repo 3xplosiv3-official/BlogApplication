@@ -21,8 +21,8 @@ async def user_login(http_exception, status, username: str, password: str):
     :type username: str
     :param password: Raw password provided by the user.
     :type password: str
-    :return: JWT access token for authenticated user.
-    :rtype: str
+    :return: JWT access token for authenticated user and User object.
+    :rtype: tuple
     :raises: http_exception: If the username or password is incorrect.
     """
 
@@ -35,4 +35,4 @@ async def user_login(http_exception, status, username: str, password: str):
         )
     access_token = create_access_token(data={"sub": user.id})
 
-    return access_token
+    return access_token, user

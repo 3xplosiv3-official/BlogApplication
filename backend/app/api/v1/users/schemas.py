@@ -28,10 +28,16 @@ class UserToken(BaseModel):
     Attributes:
         access_token (str): The JWT token for user authentication.
         token_type (str): The type of the token, typically "bearer".
+        user_id (int): The id of the user in DB.
+        username (str): The username of the user in DB.
+        status (int): The status of the user in DB.
     """
 
     access_token: str
     token_type: str
+    user_id: int
+    username: str
+    status: int
 
 
 class UserInDB(UserBase):

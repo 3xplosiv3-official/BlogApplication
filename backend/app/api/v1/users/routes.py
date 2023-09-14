@@ -48,12 +48,13 @@ async def login_for_access_token(
     :param form_data: OAuth2 password request form data, which contains
     the username and password.
     :type form_data: OAuth2PasswordRequestForm
-    :return: A dictionary containing the access token and token type.
+    :return: A dictionary containing the access token, token type, user id,
+        username and status of the user.
     :rtype: dict
     :raises HTTPException: Raises 401 error if authentication fails.
     """
 
-    access_token = await l_c.user_login(
+    access_token, user = await l_c.user_login(
         http_exception=HTTPException,
         status=status.HTTP_401_UNAUTHORIZED,
         username=form_data.username,
@@ -62,4 +63,10 @@ async def login_for_access_token(
 
     response.set_cookie(key="access_token", value=access_token, httponly=True)
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        'user_id': user.id,
+        'username': user.username,
+        'status': user.status
+    }
