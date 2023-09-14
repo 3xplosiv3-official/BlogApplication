@@ -19,9 +19,9 @@ class TimestampMixin:
     Attributes:
         created_at (datetime): The timestamp when the model instance was created.
             It's automatically set on the instance creation and cannot be modified.
-        modified_at (datetime): The timestamp when the model instance was last
-            modified. It's automatically updated whenever the model instance is saved.
+        updated_at (datetime): The timestamp when the model instance was last
+            updated_at. It's automatically updated whenever the model instance is saved.
     """
 
     created_at = fields.DatetimeField(null=True, auto_now_add=True)
-    modified_at = fields.DatetimeField(null=True, auto_now=True)
+    updated_at = fields.DatetimeField(null=True, auto_now=True)
