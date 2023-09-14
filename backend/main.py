@@ -1,3 +1,12 @@
+"""
+Main Application Entry Point.
+
+This module initializes the FastAPI application, sets up CORS, initializes the
+database, and configures the API routes.
+It also contains the startup event where the database is initialized and a
+default admin user is created.
+"""
+
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
@@ -26,6 +35,9 @@ app.add_middleware(
 async def startup_event():
     """
     Startup event for the FastAPI application.
+
+    This event is triggered when the application starts.
+    It initializes the database and creates a default admin user.
     """
 
     await database_init()

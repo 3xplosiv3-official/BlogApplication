@@ -1,3 +1,11 @@
+"""
+Models for Articles.
+
+This module provides the Tortoise-ORM model for managing articles in the system.
+The primary model here is the `Article`, which represents a blog article
+with its associated properties.
+"""
+
 from tortoise import fields
 
 from app.models.base import AbstractBaseModel
@@ -5,6 +13,16 @@ from app.models.timestamp import TimestampMixin
 
 
 class Article(AbstractBaseModel, TimestampMixin):
+    """
+    ORM model representing a blog article.
+
+    Each article has a title, content and can have multiple associated comments.
+
+    Attributes:
+    - title: The title or headline of the article.
+    - content: The main content or body of the article.
+    - comments: Reverse relation to the comments associated with the article.
+    """
 
     title = fields.CharField(max_length=255)
     content = fields.TextField()

@@ -5,6 +5,20 @@ class Settings(BaseSettings):
     """
     Application's main settings.
 
+    Attributes:
+        PROJECT_NAME (str): Name of the project.
+        PROJECT_DESCRIPTION (str): Description of the project.
+        PROJECT_VERSION (str): Actual version of the project.
+        API_V1_ENDPOINT (str): Base endpoint for version 1 of the API.
+
+        DATABASE_URL (str): Connection URL for the database.
+
+        SECRET_KEY (str): Secret key for encoding and decoding JWT tokens.
+        ALGORITHM (str): Algorithm to be used for JWT.
+        ACCESS_TOKEN_EXPIRE_MINUTES (int): Token expiration time.
+
+        DEFAULT_ADMIN_USERNAME (str): Default admin username.
+        DEFAULT_ADMIN_PASSWORD (str): Default admin password.
     """
 
     PROJECT_NAME: str = "ENIGMA BLOG APPLICATION"
