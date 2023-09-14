@@ -54,7 +54,37 @@ function MainPage() {
       <h1 className="font-bold text-xl px-4 mb-4">
         Articles ({totalArticles})
       </h1>
-      {/* Conditional content render */}
+      <StateHandler state={{ error, loading, length: articles.length }}>
+        <StateHandler.Loading>
+          <div className="text-center font-bold">Loading...</div>
+        </StateHandler.Loading>
+        <StateHandler.Error>
+          <div className="flex flex-col items-center">
+            <h1 className="font-bold mb-4">Error in getting articles!</h1>
+            <button
+              className="button-md bg-gray-50 border border-gray-100"
+              onClick={() => window.location.reload()}
+            >
+              <span className="ic">refresh</span>
+              Reload page
+            </button>
+          </div>
+        </StateHandler.Error>
+        <StateHandler.Empty>
+          <div className="flex flex-col items-center">
+            <h1 className="font-bold mb-4">Empty...</h1>
+          </div>
+        </StateHandler.Empty>
+        <StateHandler.Success>
+          <Articles
+            articles={articles}
+            setArticles={setArticles}
+            totalArticles={totalArticles}
+            articlesPerPage={articlesPerPage}
+            currentPage={currentPage}
+          />
+        </StateHandler.Success>
+      </StateHandler>
     </div>
   );
 }

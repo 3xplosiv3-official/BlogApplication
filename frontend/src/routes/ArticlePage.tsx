@@ -59,7 +59,31 @@ function ArticlePage() {
 
   return (
     <div className="flex flex-col h-full px-4">
-           {/* Conditional content render */}
+      <StateHandler state={{ error, loading }}>
+        <StateHandler.Loading>
+          <div className="text-center font-bold">Loading...</div>
+        </StateHandler.Loading>
+        <StateHandler.Error>
+          <div className="flex flex-col items-center">
+            <h1 className="font-bold mb-4">Error in getting article!</h1>
+            <button
+              className="button-md bg-gray-50 border border-gray-100"
+              onClick={handleGoToArticles}
+            >
+              <span className="ic">west</span>
+              Go back to articles
+            </button>
+          </div>
+        </StateHandler.Error>
+        <StateHandler.Empty>
+          <div className="flex flex-col items-center">
+            <h1 className="font-bold mb-4">Empty...</h1>
+          </div>
+        </StateHandler.Empty>
+        <StateHandler.Success>
+          <Article article={article} />
+        </StateHandler.Success>
+      </StateHandler>
     </div>
   );
 }
