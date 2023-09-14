@@ -7,6 +7,7 @@ as well as a more specific schema representing a comment as it is stored in the 
 """
 
 from pydantic import BaseModel
+from datetime import datetime
 
 
 class CommentBase(BaseModel):
@@ -50,10 +51,14 @@ class CommentInDB(CommentBase):
     Attributes:
     - `id` (int): The unique identifier for the comment.
     - `article_id` (int): The ID of the article to which the comment belongs.
+    - `created_at` (datetime):  The timestamp of the comment when it was created.
+    - `updated_at` (datetime):  The timestamp of the comment when it was updated.
     """
 
     id: int
     article_id: int
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         """
