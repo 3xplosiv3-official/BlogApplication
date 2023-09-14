@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 1 day
 
+    DEFAULT_ADMIN_USERNAME: str = 'admin'
+    DEFAULT_ADMIN_PASSWORD: str = 'admin1'
+
     class Config:
         case_sensitive = True
         env_file = ".env"

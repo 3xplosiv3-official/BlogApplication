@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from app.core.config.settings import settings
 from app.core.database.connection import database_init
-
+from backend.services.initialization import init_default_admin
 
 # Set up FastAPI application
 app = FastAPI(
@@ -19,7 +19,7 @@ async def startup_event():
     """
 
     await database_init()
-
+    await init_default_admin()
 
 # Entry point for running the application
 if __name__ == "__main__":
