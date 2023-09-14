@@ -1,35 +1,97 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { createContext, useState } from "react";
+import { Routes, Route } from "react-router-dom";
+
+import RouteWrapper from "./components/RouteWrapper";
+
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import LoginPage from "./routes/LoginPage";
+import MainPage from "./routes/MainPage";
+import ArticlePage from "./routes/ArticlePage";
+import AdminPage from "./routes/AdminPage";
+import NotFoundPage from "./routes/NotFoundPage";
+
+import { TUser } from "./ts/types";
+import { ICredentials } from "./ts/interfaces";
+import axios from "axios";
+
+export const UserContext = createContext<TUser>(null);
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Get user from local storage
+  const storedUser = localStorage.getItem("user");
+
+  // States
+  const [user, setUser] = useState<TUser>(
+    storedUser ? JSON.parse(storedUser) : null
+  );
+
+  // Logout Handler
+  function handleLogOut() {
+    setUser(null);
+    localStorage.removeItem("user");
+  }
+
+  // Login Handler
+  const handleLogIn = async (data: ICredentials) => {
+    try {
+      const response = await axios.post(
+        import.meta.env.VITE_BASE_URL + "/users/token",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+
+      const { access_token, user_id, status, username } = response.data;
+
+      const userData = {
+        id: user_id,
+        username: username,
+        token: access_token,
+        isAdmin: status,
+      };
+
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+    } catch (error) {
+      console.error("Error while authorization: ", error);
+    }
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <UserContext.Provider value={user}>
+        <Header handleLogOut={handleLogOut} />
+        <div className="flex-1 flex flex-col overflow-scroll">
+          <Routes>
+            <Route
+              path="/login"
+              element={
+                <RouteWrapper user={user} onlyForGuests={true}>
+                  <LoginPage handleLogIn={handleLogIn} />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <RouteWrapper user={user} onlyForAdmin={true}>
+                  <AdminPage />
+                </RouteWrapper>
+              }
+            />
+            <Route path="/" element={<MainPage />} />
+            <Route path="/articles/:id" element={<ArticlePage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </div>
+        <Footer />
+      </UserContext.Provider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

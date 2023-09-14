@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'IBM Plex Sans', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  @apply fixed w-full overflow-hidden flex min-w-[320px] min-h-screen bg-gray-50
+}
+
+#root {
+  @apply relative h-screen overflow-hidden flex flex-col flex-1 items-stretch justify-between mx-auto max-w-7xl bg-white shadow-lg
+}
+
+.input {
+  font-family: inherit;
+  @apply bg-gray-50 border border-gray-100 px-6 h-16 rounded-lg
+}
+
+.textarea {
+  font-family: inherit;
+  @apply bg-gray-50 border border-gray-100 p-6 rounded-lg resize-none
+}
+
+.button {
+  @apply flex items-center gap-4 px-6 rounded-lg font-bold text-left
+}
+
+.button-sm {
+  @apply button h-10
+}
+
+.button-md {
+  @apply button h-14
+}
+
+.button-lg {
+  @apply button h-16
+}
+
+.ic {
+  font-family: 'Material Symbols Rounded Variable', sans-serif;
+}
+
+.animate-shake {
+  animation: shake 0.5s linear forwards;
+}
+
+@keyframes shake {
+
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
