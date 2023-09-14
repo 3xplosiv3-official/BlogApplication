@@ -1,26 +1,35 @@
+from typing import List
+
 from pydantic import BaseModel
 
 
 class ArticleBase(BaseModel):
+    title: str
+    content: str
+
+
+class ArticleCreate(ArticleBase):
 
     pass
 
 
-class ArticleCreate(BaseModel):
+class ArticleUpdate(ArticleBase):
 
     pass
 
 
-class ArticleUpdate(BaseModel):
+class ArticleInDB(ArticleBase):
 
-    pass
+    id: int
 
+    class Config:
 
-class ArticleInDB(BaseModel):
-
-    pass
+        from_attributes = True
 
 
 class ArticleResponse(BaseModel):
 
-    pass
+    total: int
+    page: int
+    per_page: int
+    items: List[ArticleInDB]
