@@ -31,7 +31,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(main_api_router)
+# Set up main api router
+app.include_router(main_api_router, prefix=settings.API_V1_ENDPOINT)
+
 
 @app.on_event("startup")
 async def startup_event():
