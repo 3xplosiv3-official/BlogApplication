@@ -18,9 +18,7 @@ function DeleteArticleModal({
       <div className="flex gap-2 justify-end mt-4">
         <button
           className="button-sm bg-red-100 text-red-400"
-          onClick={() => {
-            deleteArticle;
-          }}
+          onClick={deleteArticle}
         >
           Confirm
         </button>

@@ -5,7 +5,7 @@ import {
   ChangeEvent,
   useContext,
 } from "react";
-import { IComment } from "../../ts/interfaces";
+import { IComment, ToastStatus } from "../../types";
 import axios, { AxiosError } from "axios";
 import StateHandler from "../StateHandler/StateHandler";
 import Comment from "./Comment";
@@ -60,10 +60,10 @@ function Comments({ articleId }: { articleId: string | undefined }) {
 
       setComment("");
       await getComments();
-      addToast("Successfully commented", 1);
+      addToast("Successfully commented", ToastStatus.Success);
     } catch (error) {
       const err = error as AxiosError;
-      addToast(err.message, -1);
+      addToast(err.message, ToastStatus.Error);
       console.error("Error in getting comments:", error);
     } finally {
       setIsLeaveCommentDisabled(false);
@@ -79,11 +79,10 @@ function Comments({ articleId }: { articleId: string | undefined }) {
         },
       });
       setComments(comments.filter((x) => x.id !== id));
-      addToast("Successfully deleted comment", 1);
-      return true;
+      addToast("Successfully deleted comment", ToastStatus.Success);
     } catch (error) {
       const err = error as AxiosError;
-      addToast(err.message, -1);
+      addToast(err.message, ToastStatus.Error);
       console.error("Error in deleting article:", error);
     }
   };

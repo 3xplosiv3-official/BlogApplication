@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 import { MouseEventHandler, useContext } from "react";
-import { UserContext } from "../App";
+import { UserContext } from "./Context/UserContext";
+import { UserRole } from "../types";
 
 function Header({ handleLogOut }: { handleLogOut: MouseEventHandler }) {
-  const user = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
   // Conditionally render Sign Up or Sign In button
   const AuthButton = () => {
-    if (user) {
+    if (user)
       return (
         <div>
           <button
@@ -19,36 +20,30 @@ function Header({ handleLogOut }: { handleLogOut: MouseEventHandler }) {
           </button>
         </div>
       );
-    } else {
-      return (
-        <div>
-          <Link
-            className="button-sm border border-gray-100 bg-gray-50"
-            to="/login"
-          >
-            <span className="ic">login</span>
-            <span className="max-sm:hidden">Sign In</span>
-          </Link>
-        </div>
-      );
-    }
+
+    return (
+      <div>
+        <Link
+          className="button-sm border border-gray-100 bg-gray-50"
+          to="/login"
+        >
+          <span className="ic">login</span>
+          <span className="max-sm:hidden">Sign In</span>
+        </Link>
+      </div>
+    );
   };
 
   // Render only if user is admin
-  const Links = () => {
+  const ManageButton = () => {
+    if (!user) return;
+    if (user.role < UserRole.Admin) return;
     return (
-      <>
-        {user?.isAdmin ? (
-          <li>
-            <Link className="font-[600]" to={"/admin"}>
-              Manage
-            </Link>
-          </li>
-        ) : null}
-        <li>
-          <AuthButton />
-        </li>
-      </>
+      <li>
+        <Link className="font-[600]" to={"/admin"}>
+          Manage
+        </Link>
+      </li>
     );
   };
 
@@ -60,7 +55,10 @@ function Header({ handleLogOut }: { handleLogOut: MouseEventHandler }) {
         </Link>
         <nav>
           <ul className="flex gap-4 items-center">
-            <Links />
+            <ManageButton />
+            <li>
+              <AuthButton />
+            </li>
           </ul>
         </nav>
       </header>

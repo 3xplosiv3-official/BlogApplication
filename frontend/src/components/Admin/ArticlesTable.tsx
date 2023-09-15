@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { IArticle } from "../../ts/interfaces";
+import { IArticle } from "../../types";
 
 interface IProps {
   articles: IArticle[];
@@ -19,14 +19,14 @@ function ArticlesTable({
     articles.map((article) => (
       <tr key={article.id}>
         <td className="w-[0%] text-xs text-gray-700">
-          <span className="sm:block">{new Date().toLocaleDateString()}</span>
-          <span className="sm:block">{new Date().toLocaleTimeString()}</span>
+          <span className="sm:block">{new Date(article.created_at).toLocaleDateString()}</span>
+          <span className="sm:block">{new Date(article.created_at).toLocaleTimeString()}</span>
         </td>
         <td className="w-[0%] text-xs text-gray-700">
-          <span className="sm:block">{new Date().toLocaleDateString()}</span>
-          <span className="sm:block">{new Date().toLocaleTimeString()}</span>
+          <span className="sm:block">{new Date(article.updated_at).toLocaleDateString()}</span>
+          <span className="sm:block">{new Date(article.updated_at).toLocaleTimeString()}</span>
         </td>
-        <td className="max-w-[150px] truncate">
+        <td className="max-w-[1ź0px] truncate">
           <span className="truncate">{article.title}</span>
         </td>
         <td className="max-w-[150px] truncate">

@@ -7,12 +7,12 @@ import {
   useState,
 } from "react";
 import Modal from "../Modal";
-import { IArticle } from "../../ts/interfaces";
+import { IBaseArticle } from "../../types";
 
 interface IProps {
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
-  createArticle: (newArticle: Partial<IArticle>) => Promise<void>;
+  createArticle: (newArticle: Partial<IBaseArticle>) => Promise<void>;
 }
 
 function CreateArticleModal({
@@ -22,8 +22,9 @@ function CreateArticleModal({
 }: IProps) {
   //States
   const [isSubmitDisabled, setIsSibmitDisabled] = useState(true);
-  const [newArticle, setNewArticle] = useState<Partial<IArticle>>({
+  const [newArticle, setNewArticle] = useState<Partial<IBaseArticle>>({
     title: "",
+    description: "",
     content: "",
   });
 
@@ -45,7 +46,7 @@ function CreateArticleModal({
 
   // Hooks
   useEffect(() => {
-    if (!newArticle.title || !newArticle.content) {
+    if (!newArticle.title || !newArticle.content || !newArticle.description) {
       setIsSibmitDisabled(true);
     } else {
       setIsSibmitDisabled(false);
@@ -66,6 +67,16 @@ function CreateArticleModal({
             name="title"
             placeholder="Title"
             value={newArticle.title}
+            onChange={handleChange}
+          />
+        </label>
+        <label htmlFor="description">
+          <div className="text-xs text-gray-600 mb-2 ml-2">Content</div>
+          <textarea
+            className="textarea w-full"
+            placeholder="Description"
+            name="description"
+            value={newArticle.description}
             onChange={handleChange}
           />
         </label>

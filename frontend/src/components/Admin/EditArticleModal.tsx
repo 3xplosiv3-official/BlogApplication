@@ -1,5 +1,5 @@
 import Modal from "../Modal";
-import { IArticle } from "../../ts/interfaces";
+import { IArticle, IBaseArticle } from "../../types";
 import {
   ChangeEvent,
   Dispatch,
@@ -11,7 +11,7 @@ import {
 interface IProps {
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
-  editArticle: (editedArticle: IArticle) => void;
+  editArticle: (editedArticle: IBaseArticle) => Promise<void>;
   article: IArticle | null;
 }
 
@@ -22,14 +22,15 @@ function EditArticleModal({
   article,
 }: IProps) {
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
-  const [editedArticle, setEditedArticle] = useState<IArticle>(
-    article ? article : { id: NaN, title: "", content: "" }
+  const [editedArticle, setEditedArticle] = useState<IBaseArticle | null>(
+    article
   );
 
   // Two-way binding
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    if (!editedArticle) return;
     const { name, value } = e.target;
     setEditedArticle({
       ...editedArticle,
@@ -40,17 +41,21 @@ function EditArticleModal({
   // Hooks
   useEffect(() => {
     if (
-      (article?.title === editedArticle.title &&
-        article.content === editedArticle.content) ||
-      !editedArticle.title ||
-      !editedArticle.content
+      (editedArticle?.title &&
+      editedArticle?.content &&
+      editedArticle?.description) &&
+      (article?.title !== editedArticle.title ||
+      article?.content !== editedArticle.content ||
+      article?.description !== editedArticle.description)
+     
     ) {
-      setIsSubmitDisabled(true);
-    } else {
       setIsSubmitDisabled(false);
+    } else {
+      setIsSubmitDisabled(true);
     }
   }, [article, editedArticle]);
 
+  if (!editedArticle) return;
   return (
     <Modal openState={[showModal, setShowModal]} title="Edit Article">
       <form
@@ -68,6 +73,16 @@ function EditArticleModal({
             name="title"
             placeholder="Title"
             value={editedArticle.title}
+            onChange={handleChange}
+          />
+        </label>
+        <label htmlFor="description">
+          <div className="text-xs text-gray-600 mb-2 ml-2">Content</div>
+          <textarea
+            className="textarea w-full"
+            name="description"
+            placeholder="Description"
+            value={editedArticle.description}
             onChange={handleChange}
           />
         </label>

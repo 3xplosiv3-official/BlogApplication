@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import Pagination from "../components/Pagination";
-import { IArticle } from "../ts/interfaces";
+import { IArticle, IBaseArticle, ToastStatus } from "../types";
 import StateHandler from "../components/StateHandler/StateHandler";
 import { useLocation } from "react-router-dom";
 import CreateArticleModal from "../components/Admin/CreateArticleModal";
@@ -56,16 +56,16 @@ function AdminPage() {
       });
 
       setArticles(articles.filter((x) => x.id !== id));
-      addToast("Successfully deleted article", 1);
+      addToast("Successfully deleted article", ToastStatus.Success);
       setShowDeleteArticleModal(false);
     } catch (error) {
       const err = error as AxiosError;
-      addToast(err.message, -1);
+      addToast(err.message, ToastStatus.Error);
       console.error("Error in deleting article:", error);
     }
   };
 
-  const editArticle = async (editedArticle: Partial<IArticle>) => {
+  const editArticle = async (editedArticle: IBaseArticle) => {
     try {
       await axios.put(
         import.meta.env.VITE_BASE_URL + "/articles/" + editedArticle.id,
@@ -86,21 +86,22 @@ function AdminPage() {
         )
       );
 
-      addToast("Successfully updated article", 1);
+      addToast("Successfully updated article", ToastStatus.Success);
       setShowEditArticleModal(false);
     } catch (error) {
       const err = error as AxiosError;
-      addToast(err.message, -1);
+      addToast(err.message, ToastStatus.Error);
       console.error("Error in updating article:", error);
     }
   };
 
-  const createArticle = async (newArticle: Partial<IArticle>) => {
+  const createArticle = async (newArticle: Partial<IBaseArticle>) => {
     try {
       await axios.post(
         import.meta.env.VITE_BASE_URL + "/articles",
         {
           title: newArticle.title,
+          description: newArticle.description,
           content: newArticle.content,
         },
         {
@@ -113,10 +114,10 @@ function AdminPage() {
 
       setShowCreateArticleModal(false);
       await getArticles();
-      addToast("Successfully created article", 1);
+      addToast("Successfully created article", ToastStatus.Success);
     } catch (error) {
       const err = error as AxiosError;
-      addToast(err.message, -1);
+      addToast(err.message, ToastStatus.Error);
       console.error("Error while creating article:", error);
     }
   };
@@ -216,8 +217,8 @@ function AdminPage() {
                   </div>
                 </StateHandler.Error>
                 <StateHandler.Empty>
-                  <div className="flex flex-col items-center">
-                    <h1 className="font-bold mb-4">Empty...</h1>
+                  <div className="flex flex-col flex-1 justify-center items-center">
+                    <h1 className="font-bold">Empty...</h1>
                   </div>
                 </StateHandler.Empty>
                 <StateHandler.Success>

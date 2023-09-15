@@ -1,10 +1,11 @@
 import {
-  ReactNode,
   createContext,
+  ReactNode,
   useContext,
   useEffect,
   useState,
 } from "react";
+import { ResponseState } from "../../types";
 
 // State Interface
 interface IState {
@@ -14,31 +15,7 @@ interface IState {
 }
 
 // Create Context
-const StateContext = createContext<number>(0);
-
-// Handle loading state
-function Loading({ children }: { children?: ReactNode }) {
-  const state = useContext(StateContext);
-  if (state === 0) return <>{children}</>;
-}
-
-// Handle error state
-function Error({ children }: { children?: ReactNode }) {
-  const state = useContext(StateContext);
-  if (state === 1) return <>{children}</>;
-}
-
-// If no elements
-function Empty({ children }: { children?: ReactNode }) {
-  const state = useContext(StateContext);
-  if (state === 2) return <>{children}</>;
-}
-
-// If all ok
-function Success({ children }: { children?: ReactNode }) {
-  const state = useContext(StateContext);
-  if (state === 3) return <>{children}</>;
-}
+const StateContext = createContext<ResponseState>(ResponseState.Loading);
 
 function StateHandler({
   state,
@@ -51,11 +28,16 @@ function StateHandler({
   if (state.length === undefined) {
     state.length = 1;
   }
-  // Set state code
-  const stateCode = state.loading ? 0 : state.error ? 1 : !state.length ? 2 : 3;
 
-  // States
-  const [currentState, setCurrentState] = useState<number>(stateCode);
+  // State code
+  const stateCode = (() => {
+    if (state.loading) return ResponseState.Loading;
+    if (state.error) return ResponseState.Error;
+    if (!state.length) return ResponseState.Empty;
+    return ResponseState.Success;
+  })();
+
+  const [currentState, setCurrentState] = useState<ResponseState>(stateCode);
 
   // Hooks
   useEffect(() => {
@@ -69,9 +51,31 @@ function StateHandler({
   );
 }
 
-StateHandler.Loading = Loading;
-StateHandler.Error = Error;
-StateHandler.Empty = Empty;
-StateHandler.Success = Success;
+function StateComponent({
+  stateCode,
+  children,
+}: {
+  stateCode: ResponseState;
+  children?: ReactNode;
+}) {
+  const state = useContext(StateContext);
+  return state === stateCode ? <>{children}</> : null;
+}
+
+StateHandler.Loading = (props: { children: ReactNode }) => (
+  <StateComponent stateCode={ResponseState.Loading} {...props} />
+);
+
+StateHandler.Error = (props: { children: ReactNode }) => (
+  <StateComponent stateCode={ResponseState.Error} {...props} />
+);
+
+StateHandler.Empty = (props: { children: ReactNode }) => (
+  <StateComponent stateCode={ResponseState.Empty} {...props} />
+);
+
+StateHandler.Success = (props: { children: ReactNode }) => (
+  <StateComponent stateCode={ResponseState.Success} {...props} />
+);
 
 export default StateHandler;

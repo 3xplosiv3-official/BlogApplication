@@ -1,18 +1,20 @@
-import { ReactNode, createContext, useContext, useState } from "react";
-import { IToast, IToasterContext } from "../../ts/interfaces";
+import { ReactNode, createContext, useState } from "react";
+import { IToast, IToasterContext, ToastStatus } from "../../types";
 
+// Set default context to prevent TS errors
 export const ToasterContext = createContext<IToasterContext>({
   toasts: [],
   setToasts: () => {},
   addToast: () => {},
 });
 
-export const useToaster = () => useContext(ToasterContext);
-
+// Set provider wrapper
 function ToasterProvider({ children }: { children: ReactNode }) {
+  // State
   const [toasts, setToasts] = useState<IToast[]>([]);
 
-  const addToast = (message: string, type: number) => {
+  // Add toast function
+  const addToast = (message: string, type: ToastStatus) => {
     setToasts([...toasts, { message, type }]);
   };
 

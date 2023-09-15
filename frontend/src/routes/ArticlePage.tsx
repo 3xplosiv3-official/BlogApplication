@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
-import { IArticle } from "../ts/interfaces";
+import { IArticle } from "../types";
 import Comments from "../components/Comments/Comments";
 import axios from "axios";
 import StateHandler from "../components/StateHandler/StateHandler";

@@ -1,17 +1,21 @@
-import { ReactNode, createContext, useContext, useState } from "react";
-import { IUserContext } from "../../ts/interfaces";
+import { ReactNode, createContext, useState } from "react";
+import { IUserContext, TUser } from "../../types";
 
+// Set default value for context to prevent TS errors
 export const UserContext = createContext<IUserContext>({
   user: null,
   setUser: () => {},
 });
 
-export const useUser = () => useContext(UserContext);
-
+// Set provider wrapper
 function UserProvider({ children }: { children: ReactNode }) {
+  // Getting stored user from local storage
   const storedUser = localStorage.getItem("user");
 
-  const [user, setUser] = useState(storedUser ? JSON.parse(storedUser) : null);
+  // State (checking if user exists in local storage and set null if does not)
+  const [user, setUser] = useState<TUser>(
+    storedUser ? JSON.parse(storedUser) : null
+  );
 
   return (
     <UserContext.Provider value={{ user, setUser }}>

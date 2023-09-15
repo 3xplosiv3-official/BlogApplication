@@ -7,16 +7,22 @@ import MainPage from "./routes/MainPage";
 import ArticlePage from "./routes/ArticlePage";
 import AdminPage from "./routes/AdminPage";
 import NotFoundPage from "./routes/NotFoundPage";
-import { ICredentials, IUser, IUserResponse } from "./ts/interfaces";
+import {
+  ICredentials,
+  TUser,
+  IUserResponse,
+  ToastStatus,
+} from "./types";
 import axios, { AxiosError } from "axios";
 import Toaster from "./components/Toaster/Toaster";
-import { useUser } from "./components/Context/UserContext";
-import { useToaster } from "./components/Context/ToasterContext";
+import { UserContext } from "./components/Context/UserContext";
+import { ToasterContext } from "./components/Context/ToasterContext";
+import { useContext } from "react";
 
 function App() {
   // Contexts
-  const { user, setUser } = useUser();
-  const { addToast } = useToaster();
+  const { user, setUser } = useContext(UserContext);
+  const { addToast } = useContext(ToasterContext);
 
   // Logout Handler
   function handleLogOut() {
@@ -40,19 +46,19 @@ function App() {
       const { access_token, user_id, status, username }: IUserResponse =
         response.data;
 
-      const userData: IUser = {
+      const userData: TUser = {
         id: user_id,
         username: username,
         token: access_token,
-        isAdmin: status,
+        role: status,
       };
 
       setUser(userData);
-      addToast("Success", 1);
+      addToast("Success", ToastStatus.Success);
       localStorage.setItem("user", JSON.stringify(userData));
     } catch (error) {
       const err = error as AxiosError;
-      addToast(err.message || "Unexpected errror", -1);
+      addToast(err.message || "Unexpected errror", ToastStatus.Error);
       console.error("Error while authorization: ", error);
     }
   };
@@ -61,12 +67,12 @@ function App() {
     <>
       <Toaster />
       <Header handleLogOut={handleLogOut} />
-      <div className="flex-1 flex flex-col overflow-scroll">
+      <div className="flex-1 flex flex-col overflow-x-hidden overflow-y-scroll">
         <Routes>
           <Route
             path="/login"
             element={
-              <RouteWrapper user={user} onlyForGuests={true}>
+              <RouteWrapper user={user} onlyForRoles={[0]}>
                 <LoginPage handleLogIn={handleLogIn} />
               </RouteWrapper>
             }
@@ -74,7 +80,7 @@ function App() {
           <Route
             path="/admin"
             element={
-              <RouteWrapper user={user} onlyForAdmin={true}>
+              <RouteWrapper user={user} onlyForRoles={[1]}>
                 <AdminPage />
               </RouteWrapper>
             }

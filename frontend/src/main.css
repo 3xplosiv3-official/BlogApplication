@@ -18,7 +18,7 @@ body {
 }
 
 #root {
-  @apply relative h-screen overflow-hidden flex flex-col flex-1 items-stretch justify-between mx-auto max-w-7xl bg-white shadow-lg
+  @apply relative h-screen overflow-hidden flex flex-col flex-1 mx-auto max-w-7xl bg-white shadow-lg
 }
 
 .input {
@@ -93,6 +93,18 @@ body {
     @apply block
   }
 
+  .responsive-table thead {
+    @apply hidden
+  }
+
+  .responsive-table tr {
+    @apply flex flex-col truncate my-4
+  }
+
+  .responsive-table td {
+    @apply flex gap-2 max-w-none w-full px-4 py-3 break-words items-center border-x border-b border-gray-100 first:rounded-t-lg last:rounded-b-lg last:pb-4 first:border-t
+  }
+
   .responsive-table td:before {
     @apply mr-auto
   }
@@ -111,22 +123,5 @@ body {
 
   .responsive-table td:nth-of-type(4):before {
     content: "Content:";
-  }
-
-  .responsive-table td:nth-of-type(1),
-  .responsive-table td:nth-of-type(1) {
-    @apply [&>br]:hidden
-  }
-
-  .responsive-table thead {
-    @apply hidden
-  }
-
-  .responsive-table tr {
-    @apply flex flex-col truncate my-4
-  }
-
-  .responsive-table td {
-    @apply flex gap-2 max-w-none w-full px-4 py-3 break-words justify-between items-center border-x border-b border-gray-100 first:rounded-t-lg last:rounded-b-lg last:pb-4 first:border-t
   }
 }

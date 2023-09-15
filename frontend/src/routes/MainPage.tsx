@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import Articles from "../components/Articles/Articles";
-import { IArticle } from "../ts/interfaces";
+import { IArticle, IBaseArticle, ToastStatus } from "../types";
 import axios, { AxiosError } from "axios";
 import StateHandler from "../components/StateHandler/StateHandler";
 import { useLocation } from "react-router-dom";
@@ -56,16 +56,16 @@ function MainPage() {
       });
 
       setArticles(articles.filter((x) => x.id !== id));
-      addToast("Successfully deleted article", 1);
+      addToast("Successfully deleted article", ToastStatus.Success);
       setShowDeleteArticleModal(false);
     } catch (error) {
       const err = error as AxiosError;
-      addToast(err.message, -1);
+      addToast(err.message, ToastStatus.Error);
       console.error("Error in deleting article:", error);
     }
   };
 
-  const editArticle = async (editedArticle: IArticle) => {
+  const editArticle = async (editedArticle: IBaseArticle) => {
     try {
       await axios.put(
         import.meta.env.VITE_BASE_URL + "/articles/" + editedArticle.id,
@@ -86,11 +86,11 @@ function MainPage() {
         )
       );
 
-      addToast("Successfully updated article", 1);
+      addToast("Successfully updated article", ToastStatus.Success);
       setShowEditArticleModal(false);
     } catch (error) {
       const err = error as AxiosError;
-      addToast(err.message, -1);
+      addToast(err.message, ToastStatus.Error);
       console.error("Error in updating article:", error);
     }
   };
@@ -143,23 +143,25 @@ function MainPage() {
   return (
     <>
       <Modals />
-      <div className="flex flex-col p-4">
+      <div className="flex h-full flex-col p-4">
         <h1 className="font-bold text-xl px-4 mb-4">
           Articles ({totalArticles})
         </h1>
         <StateHandler state={{ error, loading, length: articles.length }}>
           <StateHandler.Loading>
-            <div className="text-center font-bold">Loading...</div>
+            <div className="flex flex-col justify-center items-center h-full font-bold">
+              Loading...
+            </div>
           </StateHandler.Loading>
           <StateHandler.Error>
-            <div className="flex flex-col items-center">
-              <h1 className="font-bold mb-4">Error in getting articles!</h1>
+            <div className="flex flex-1 justify-center flex-col items-center">
+              <span className="font-bold mb-4">Error in getting articles!</span>
               <button
                 className="button-md bg-gray-50 border border-gray-100"
-                onClick={() => window.location.reload()}
+                onClick={getArticles}
               >
                 <span className="ic">refresh</span>
-                Reload page
+                Try again
               </button>
             </div>
           </StateHandler.Error>

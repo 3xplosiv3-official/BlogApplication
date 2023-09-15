@@ -1,26 +1,26 @@
 import { ChangeEvent, useState } from "react";
-import { ICredentials } from "../ts/interfaces";
+import { ICredentials, InitialCredentials } from "../types";
 
 function LoginPage({
   handleLogIn,
 }: {
-  handleLogIn: (data: ICredentials) => void;
+  handleLogIn: (credentials: ICredentials) => void;
 }) {
   // States
-  const [data, setData] = useState({ username: "", password: "" });
+  const [credentials, setCredentials] = useState(InitialCredentials);
 
   // Change handler
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setData({ ...data, [e.target.name]: e.target.value });
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
   return (
-    <div className="flex flex-col items-center px-4">
+    <div className="flex flex-1 flex-col justify-center items-center px-4">
       <h1 className="font-bold text-2xl mb-4">Sign In</h1>
       <form className="flex flex-col w-full max-w-md gap-4">
         <input
           className="input"
-          value={data.username}
+          value={credentials.username}
           onChange={handleChange}
           type="text"
           name="username"
@@ -28,7 +28,7 @@ function LoginPage({
         />
         <input
           className="input"
-          value={data.password}
+          value={credentials.password}
           onChange={handleChange}
           type="password"
           name="password"
@@ -36,10 +36,10 @@ function LoginPage({
         />
         <button
           className="button-lg bg-accent text-white disabled:opacity-50"
-          disabled={!data.username || !data.password}
+          disabled={!credentials.username || !credentials.password}
           onClick={(e) => {
             e.preventDefault();
-            handleLogIn(data);
+            handleLogIn(credentials);
           }}
         >
           Sign In
