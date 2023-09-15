@@ -23,7 +23,8 @@ router = APIRouter(prefix="/comments", tags=["comments"])
         "<b>Retrieve a list of all available comments.</b>\n\n"
         "Return Type: `List[CommentInDB]`."
     ),
-    response_description="List of all comments."
+    response_description="List of all comments.",
+    deprecated=True
 )
 async def list_comments():
     """
@@ -44,7 +45,8 @@ async def list_comments():
         "<b>Retrieve a specific comment by its ID.</b>\n\n"
         "Return Type: `CommentInDB`."
     ),
-    response_description="Details of the specified comment."
+    response_description="Details of the specified comment.",
+    deprecated=True,
 )
 async def retrieve_comment(comment_id: int):
     """
@@ -124,7 +126,8 @@ async def create_new_comment(comment: s_s.CommentCreate):
         "<b>Update the details of an existing comment.</b>\n\n"
         "Return Type: `CommentInDB`."
     ),
-    response_description="The updated comment details."
+    response_description="The updated comment details.",
+    deprecated=True,
 )
 async def update_existing_comment(comment: s_s.CommentInDB):
     """
