@@ -6,8 +6,8 @@ Each comment is linked to a specific article via a ForeignKey relationship.
 """
 
 from tortoise import fields
-from app.models.base import AbstractBaseModel
-from app.models.timestamp import TimestampMixin
+from basic_models.base import AbstractBaseModel
+from basic_models.timestamp import TimestampMixin
 
 
 class Comment(AbstractBaseModel, TimestampMixin):

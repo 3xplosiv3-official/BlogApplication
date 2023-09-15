@@ -6,7 +6,7 @@ a utility function to handle user login, verify credentials, and generate
 a JWT access token for authenticated users.
 """
 from app.api.v1.users.models import User
-from app.services.jwt import create_access_token
+from services.jwt import create_access_token
 
 
 async def user_login(http_exception, status, username: str, password: str):

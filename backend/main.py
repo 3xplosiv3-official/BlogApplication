@@ -10,9 +10,10 @@ default admin user is created.
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from app.api.v1.routers import main_api_router
 from app.core.config.settings import settings
 from app.core.database.connection import database_init
-from backend.services.initialization import init_default_admin
+from services.initialization import init_default_admin
 
 # Set up FastAPI application
 app = FastAPI(
@@ -30,6 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(main_api_router)
 
 @app.on_event("startup")
 async def startup_event():

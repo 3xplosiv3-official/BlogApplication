@@ -6,9 +6,9 @@ This module provides functions to set and verify user passwords using hashed met
 """
 from tortoise import fields
 
-from app.models.base import AbstractBaseModel
-from app.models.timestamp import TimestampMixin
-from app.services.password import hash_password, verify_password
+from basic_models.base import AbstractBaseModel
+from basic_models.timestamp import TimestampMixin
+from services.password import hash_password, verify_password
 
 
 class User(AbstractBaseModel, TimestampMixin):

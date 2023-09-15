@@ -10,7 +10,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
 from app.api.v1.users.models import User
-from app.services.jwt import decode_jwt_token
+from services.jwt import decode_jwt_token
 
 # Define the OAuth2 password-based scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/users/token")

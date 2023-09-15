@@ -13,7 +13,7 @@ from fastapi import Query, Depends, APIRouter
 from app.api.v1.articles import schemas as s_s
 from app.api.v1.articles import logic as l_c
 from app.api.v1.users.models import User
-from app.services.authentication import get_current_user
+from services.authentication import get_current_user
 
 router = APIRouter(prefix="/articles", tags=["articles"])
 
