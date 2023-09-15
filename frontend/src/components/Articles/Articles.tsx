@@ -1,114 +1,105 @@
-import Article from "./Article";
-import Pagination from "../Pagination";
-import { IArticle, IToast } from "../../ts/interfaces";
-import { Dispatch, SetStateAction, useContext, useState } from "react";
-import axios, { AxiosError } from "axios";
+import { IArticle } from "../../ts/interfaces";
+import { useContext } from "react";
 import { UserContext } from "../../App";
-import Toaster from "../StateHandler/Toaster";
+import { useNavigate } from "react-router-dom";
 
 // Props Interface
 interface IProps {
   articles: IArticle[];
-  setArticles: Dispatch<SetStateAction<IArticle[]>>;
-  totalArticles: number;
-  articlesPerPage: number;
-  currentPage: number;
+  setArticle: (article: IArticle) => void;
+  setShowEditModal: (boolean: boolean) => void;
+  setShowDeleteModal: (boolean: boolean) => void;
 }
 
 function Articles({
   articles,
-  setArticles,
-  totalArticles,
-  articlesPerPage,
-  currentPage,
+  setArticle,
+  setShowEditModal,
+  setShowDeleteModal,
 }: IProps) {
   // Context
   const user = useContext(UserContext);
 
-  // States
-  const [messages, setMessages] = useState<IToast[]>([]);
+  // Navigate
+  const navigate = useNavigate();
 
-  // Add Toaster message
-  const addMessage = (message: string | number, type: number = 1) => {
-    setMessages([...messages, { message, type }]);
-  };
-
-  // Functions to manage Articles
-  const deleteArticle = async (id: number) => {
-    try {
-      await axios.delete(import.meta.env.VITE_BASE_URL + "/articles/" + id, {
-        headers: {
-          Authorization: "Bearer " + user?.token,
-        },
-      });
-
-      setArticles(articles.filter((x) => x.id !== id));
-      addMessage("Successfully deleted", 1);
-
-      return true;
-    } catch (error) {
-      const err = error as AxiosError;
-      addMessage(err.message || "Unexpected errror", -1);
-      console.error("Error in deleting article:", error);
+  // Helper function
+  const truncate = (string: string, length: number) => {
+    if (string.length > length) {
+      return string.substring(0, length) + "...";
     }
+    return string;
   };
 
-  const editArticle = async (editedArticle: IArticle) => {
-    try {
-      await axios.put(
-        import.meta.env.VITE_BASE_URL + "/articles/" + editedArticle.id,
-        editedArticle,
-        {
-          headers: {
-            Authorization: "Bearer " + user?.token,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      setArticles(
-        articles.map((article) =>
-          article.id === editedArticle.id
-            ? { ...article, ...editedArticle }
-            : article
-        )
-      );
-
-      addMessage("Successfully edited", 1);
-
-      return true;
-    } catch (error) {
-      const err = error as AxiosError;
-      addMessage(err.message || "Unexpected errror", -1);
-      console.error("Error in updating article:", error);
-    }
+  // Handlers
+  const handleReadMore = (id: number) => {
+    navigate(`/articles/${id}`);
   };
 
-  if (!articles.length) {
-    return <div className="text-center font-bold">Empty...</div>;
-  }
+  // Renders only if user is admin
+  const AdminButtons = ({ article }: { article: IArticle }) => {
+    if (!user?.isAdmin) return;
+    return (
+      <div className="flex gap-2">
+        <button
+          className="button-sm bg-red-100 text-red-400"
+          onClick={() => {
+            setArticle(article);
+            setShowDeleteModal(true);
+          }}
+        >
+          <span className="ic">delete</span>
+          <span className="sm:hidden">Delete</span>
+        </button>
+        <button
+          className="button-sm bg-gray-50 border border-gray-100"
+          onClick={() => {
+            setArticle(article);
+            setShowEditModal(true);
+          }}
+        >
+          <span className="ic">edit</span>
+          <span className="sm:hidden">Edit</span>
+        </button>
+      </div>
+    );
+  };
 
+  // Mapped articles component
+  const ArticlesMap = () =>
+    articles.map((article) => (
+      <div
+        className="flex flex-col gap-4 p-4 w-full border border-gray-200 rounded-xl"
+        key={article.id}
+      >
+        <h2 className="font-semibold break-words">
+          {truncate(article.title, 30)}
+        </h2>
+        <div className="flex flex-col h-full justify-between">
+          <div className="mb-4 break-words">
+            {truncate(article.content, 100)}{" "}
+            <div className="inline-block">
+              <button
+                className="font-semibold flex items-center gap-1"
+                onClick={() => handleReadMore(article.id)}
+              >
+                Read more
+                <span className="ic">east</span>
+              </button>
+            </div>
+          </div>
+          <AdminButtons article={article} />
+        </div>
+      </div>
+    ));
   return (
     <>
-      <Toaster messages={messages} setMessages={setMessages} />
       <div
         className="grid grid-cols-3 grid-rows-1 grid-flow-dense gap-4
       max-sm:grid-cols-1"
       >
-        {articles.map((article) => (
-          <Article
-            onEditArticle={editArticle}
-            onDeleteArticle={deleteArticle}
-            article={article}
-            key={article.id}
-          />
-        ))}
+        <ArticlesMap />
       </div>
-      <Pagination
-        itemsPerPage={articlesPerPage}
-        totalItems={totalArticles}
-        currentPage={currentPage}
-      />
     </>
   );
 }

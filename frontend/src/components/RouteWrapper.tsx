@@ -15,7 +15,7 @@ function RouteWrapper({ user, onlyForGuests, onlyForAdmin, children }: IProps) {
     throw new Error("Cannot set onlyForGuests and onlyForRoles together!");
   }
 
-  // Navigate Hook
+  // Navigate
   const navigate = useNavigate();
 
   // Hooks

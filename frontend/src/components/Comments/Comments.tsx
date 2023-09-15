@@ -17,23 +17,22 @@ function Comments({ articleId }: { articleId: string | undefined }) {
   const user = useContext(UserContext);
 
   // States
-  const [comments, setComments] = useState<IComment[]>([]);
-
   const [error, setError] = useState<unknown | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [commentContent, setCommentContent] = useState<string>("");
+  const [messages, setMessages] = useState<IToast[]>([]);
+
+  const [comments, setComments] = useState<IComment[]>([]);
+  const [comment, setComment] = useState<string>("");
   const [isLeaveCommentDisabled, setIsLeaveCommentDisabled] =
     useState<boolean>(true);
-
-  const [messages, setMessages] = useState<IToast[]>([]);
 
   // Add Toaster message
   const addMessage = (message: string | number, type: number = 1) => {
     setMessages([...messages, { message, type }]);
   };
 
-  // Callback wrapper for getComments
+  // Get comments
   const getComments = useCallback(async () => {
     try {
       const response = await axios.get<IComment[]>(
@@ -48,31 +47,14 @@ function Comments({ articleId }: { articleId: string | undefined }) {
     }
   }, [articleId, setComments]);
 
-  // Hooks
-  useEffect(() => {
-    getComments();
-  }, [getComments]);
-
-  useEffect(() => {
-    if (!commentContent) {
-      setIsLeaveCommentDisabled(true);
-    } else {
-      setIsLeaveCommentDisabled(false);
-    }
-  }, [commentContent, setIsLeaveCommentDisabled]);
-
-  const handleCommentContentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setCommentContent(e.target.value);
-  };
-
-  // Handlers
+  // Manage comments
   const leaveComment = async () => {
     try {
       setIsLeaveCommentDisabled(true);
       await axios.post(
         import.meta.env.VITE_BASE_URL + "/comments",
         {
-          content: commentContent,
+          content: comment,
           article_id: articleId,
         },
         {
@@ -82,7 +64,7 @@ function Comments({ articleId }: { articleId: string | undefined }) {
         }
       );
 
-      setCommentContent("");
+      setComment("");
       getComments();
       addMessage("Successfully commented", 1);
     } catch (error) {
@@ -112,6 +94,23 @@ function Comments({ articleId }: { articleId: string | undefined }) {
     }
   };
 
+  // Hooks
+  useEffect(() => {
+    getComments();
+  }, [getComments]);
+
+  useEffect(() => {
+    if (!comment) {
+      setIsLeaveCommentDisabled(true);
+    } else {
+      setIsLeaveCommentDisabled(false);
+    }
+  }, [comment, setIsLeaveCommentDisabled]);
+
+  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setComment(e.target.value);
+  };
+
   return (
     <div className="flex flex-col gap-4 py-4">
       <Toaster messages={messages} setMessages={setMessages} />
@@ -120,8 +119,8 @@ function Comments({ articleId }: { articleId: string | undefined }) {
         <textarea
           className="p-4 border border-gray-200 rounded-lg h-full appearance-none resize-none w-full"
           placeholder="Add comment..."
-          value={commentContent}
-          onChange={handleCommentContentChange}
+          value={comment}
+          onChange={handleChange}
         />
         <button
           className="button-lg flex-shrink-0 bg-accent bg-opacity-10 text-accent

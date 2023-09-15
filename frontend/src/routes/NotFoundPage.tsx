@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 function NotFoundPage() {
   // Navigate Hook
   const navigate = useNavigate();
+  
   return (
     <>
       <div className="flex flex-col flex-1 gap-2 items-center justify-center">

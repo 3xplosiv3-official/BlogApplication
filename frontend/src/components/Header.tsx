@@ -56,7 +56,7 @@ function Header({ handleLogOut }: { handleLogOut: MouseEventHandler }) {
     <>
       <header className="w-full bg-white border-b border-gray-100 z-50 flex justify-between items-center px-10 py-6 max-sm:px-6">
         <Link to="/">
-          <span className="font-bold text-xl">POSTER</span>
+          <span className="font-bold text-xl">BLOG APP</span>
         </Link>
         <nav>
           <ul className="flex gap-4 items-center">

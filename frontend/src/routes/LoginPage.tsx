@@ -8,6 +8,8 @@ function LoginPage({
 }) {
   // States
   const [data, setData] = useState({ username: "", password: "" });
+
+  // Change handler
   const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
     setData({ ...data, [e.target.name]: e.target.value });
 

@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IArticle } from "../ts/interfaces";
 import Comments from "../components/Comments/Comments";
 import axios from "axios";
@@ -17,45 +17,25 @@ function ArticlePage() {
   const [error, setError] = useState<unknown | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Handlers
-  const handleGoToArticles = () => {
-    navigate("/");
-  };
-
-  // Article Component (renders only if article is not null to prevent TypeScript errors)
-  const Article = ({ article }: { article: IArticle | null }) => {
-    if (!article) return null;
-    return (
-      <>
-        <div className="flex flex-col gap-4 p-4 w-full border border-gray-200 rounded-xl">
-          <h1 className="font-semibold break-words">{article.title}</h1>
-          <div className="flex flex-col h-full justify-between">
-            <div className="mb-4 break-words">{article.content}</div>
-          </div>
-        </div>
-        <Comments articleId={id} />
-      </>
-    );
-  };
+  // Get articles
+  const getArticle = useCallback(async () => {
+    try {
+      const response = await axios.get<IArticle>(
+        import.meta.env.VITE_BASE_URL + "/articles/" + id
+      );
+      setArticle(response.data);
+    } catch (error) {
+      setError(error);
+      console.error("Error in getting article:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
 
   // Hooks
   useEffect(() => {
-    const getArticle = async () => {
-      try {
-        const response = await axios.get<IArticle>(
-          import.meta.env.VITE_BASE_URL + "/articles/" + id
-        );
-        setArticle(response.data);
-      } catch (error) {
-        setError(error);
-        console.error("Error in getting article:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     getArticle();
-  }, [id]);
+  }, [getArticle]);
 
   return (
     <div className="flex flex-col h-full px-4">
@@ -68,7 +48,7 @@ function ArticlePage() {
             <h1 className="font-bold mb-4">Error in getting article!</h1>
             <button
               className="button-md bg-gray-50 border border-gray-100"
-              onClick={handleGoToArticles}
+              onClick={() => navigate(-1)}
             >
               <span className="ic">west</span>
               Go back to articles
@@ -81,7 +61,13 @@ function ArticlePage() {
           </div>
         </StateHandler.Empty>
         <StateHandler.Success>
-          <Article article={article} />
+          <div className="flex flex-col gap-4 p-4 w-full border border-gray-200 rounded-xl">
+            <h1 className="font-semibold break-words">{article?.title}</h1>
+            <div className="flex flex-col h-full justify-between">
+              <div className="mb-4 break-words">{article?.content}</div>
+            </div>
+          </div>
+          <Comments articleId={id} />
         </StateHandler.Success>
       </StateHandler>
     </div>

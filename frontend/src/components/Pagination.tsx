@@ -51,6 +51,7 @@ function Pagination({ itemsPerPage, totalItems, currentPage }: IProps) {
     navigate(`?page=${page}`);
   };
 
+  // Button buttons
   const PageButtons = () => {
     return pageNumbers.slice(startPage - 1, endPage).map((pageNumber) => (
       <button

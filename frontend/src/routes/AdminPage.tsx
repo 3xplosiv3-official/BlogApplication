@@ -1,19 +1,15 @@
-import {
-  SyntheticEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import Pagination from "../components/Pagination";
-import { IArticle, IBaseArticle, IToast } from "../ts/interfaces";
+import { IArticle, IToast } from "../ts/interfaces";
 import { UserContext } from "../App";
-import ArticleRow from "../components/Admin/ArticleRow";
 import StateHandler from "../components/StateHandler/StateHandler";
-import Modal from "../components/Modal";
 import { useLocation } from "react-router-dom";
 import Toaster from "../components/StateHandler/Toaster";
+import CreateArticleModal from "../components/Admin/CreateArticleModal";
+import EditArticleModal from "../components/Admin/EditArticleModal";
+import DeleteArticleModal from "../components/Admin/DeleteArticleModal";
+import ArticlesTable from "../components/Admin/ArticlesTable";
 
 function AdminPage() {
   // Context
@@ -30,13 +26,10 @@ function AdminPage() {
   const [error, setError] = useState(false);
 
   const [showCreateArticleModal, setShowCreateArticleModal] = useState(false);
-  const [isConfirmCreateDisabled, setIsConfirmCreateDisabled] = useState(true);
+  const [showDeleteArticleModal, setShowDeleteArticleModal] = useState(false);
+  const [showEditArticleModal, setShowEditArticleModal] = useState(false);
 
-  const [newArticle, setNewArticle] = useState<IBaseArticle>({
-    title: "",
-    content: "",
-  });
-
+  const [article, setArticle] = useState<IArticle | null>(null);
   const [messages, setMessages] = useState<IToast[]>([]);
 
   // Add Toaster message
@@ -52,8 +45,10 @@ function AdminPage() {
   const currentPage = parseInt(page);
   const articlesPerPage = parseInt(limit);
 
-  // Functions to manage Articles
-  const deleteArticle = async (id: number) => {
+  // Manage articles
+  const deleteArticle = async () => {
+    if (!article) return console.error("No article!");
+    const { id } = article;
     try {
       await axios.delete(import.meta.env.VITE_BASE_URL + "/articles/" + id, {
         headers: {
@@ -63,8 +58,7 @@ function AdminPage() {
 
       setArticles(articles.filter((x) => x.id !== id));
       addMessage("Successfully deleted article", 1);
-
-      return true;
+      setShowDeleteArticleModal(false);
     } catch (error) {
       const err = error as AxiosError;
       addMessage(err.message, -1);
@@ -72,7 +66,7 @@ function AdminPage() {
     }
   };
 
-  const editArticle = async (editedArticle: IArticle) => {
+  const editArticle = async (editedArticle: Partial<IArticle>) => {
     try {
       await axios.put(
         import.meta.env.VITE_BASE_URL + "/articles/" + editedArticle.id,
@@ -94,7 +88,7 @@ function AdminPage() {
       );
 
       addMessage("Successfully updated article", 1);
-      return true;
+      setShowEditArticleModal(false);
     } catch (error) {
       const err = error as AxiosError;
       addMessage(err.message, -1);
@@ -102,8 +96,7 @@ function AdminPage() {
     }
   };
 
-  const createArticle = async (e: SyntheticEvent) => {
-    e.preventDefault();
+  const createArticle = async (newArticle: Partial<IArticle>) => {
     try {
       await axios.post(
         import.meta.env.VITE_BASE_URL + "/articles",
@@ -129,7 +122,7 @@ function AdminPage() {
     }
   };
 
-  // Callback wrapper for getArticles
+  // Get Articles
   const getArticles = useCallback(async () => {
     try {
       setLoading(true);
@@ -147,35 +140,43 @@ function AdminPage() {
     } finally {
       setLoading(false);
     }
-  }, [articlesPerPage, currentPage]);
+  }, [articlesPerPage, currentPage, setArticles, setTotalArticles]);
 
   // Hooks
   useEffect(() => {
     getArticles();
-  }, [getArticles, currentPage]);
+  }, [getArticles]);
 
-  useEffect(() => {
-    if (!newArticle.title || !newArticle.content) {
-      setIsConfirmCreateDisabled(true);
-    } else {
-      setIsConfirmCreateDisabled(false);
-    }
-  }, [newArticle, showCreateArticleModal]);
-
-  // Article rows for table
-  const rows = articles.map((article) => (
-    <ArticleRow
-      key={article.id}
-      article={article}
-      onEditArticle={editArticle}
-      onDeleteArticle={deleteArticle}
-    />
-  ));
+  // Modals component
+  const Modals = () => {
+    return (
+      <>
+        <CreateArticleModal
+          showModal={showCreateArticleModal}
+          setShowModal={setShowCreateArticleModal}
+          createArticle={createArticle}
+        />
+        <EditArticleModal
+          showModal={showEditArticleModal}
+          setShowModal={setShowEditArticleModal}
+          editArticle={editArticle}
+          article={article}
+        />
+        <DeleteArticleModal
+          showModal={showDeleteArticleModal}
+          setShowModal={setShowDeleteArticleModal}
+          deleteArticle={deleteArticle}
+        />
+      </>
+    );
+  };
 
   return (
-    <div className="h-full">
-      <Toaster messages={messages} setMessages={setMessages} />
-      {/* <div className="flex flex-col gap-2 h-full w-full max-w-[15rem] border-r border-gray-100 p-4">
+    <>
+      <Modals />
+      <div className="h-full">
+        <Toaster messages={messages} setMessages={setMessages} />
+        {/* <div className="flex flex-col gap-2 h-full w-full max-w-[15rem] border-r border-gray-100 p-4">
         <button className="flex gap-2 bg-gray-100 rounded-lg px-4 py-2 font-semibold">
           <span className="ic">article</span>
           Articles
@@ -185,114 +186,61 @@ function AdminPage() {
           New article
         </button>
       </div> */}
-      <div className="flex flex-col p-4">
-        <h1 className="font-bold text-xl px-4 mb-4">
-          Manage articles ({totalArticles})
-        </h1>
-        <button
-          className="button-md bg-accent bg-opacity-20 text-accent mb-4"
-          onClick={() => setShowCreateArticleModal(true)}
-        >
-          <span className="ic">add</span>
-          Create article
-        </button>
-        <div className="mx-auto w-full">
-          <div className="border border-gray-200 px-4 rounded-lg">
-            <StateHandler state={{ error, loading, length: articles.length }}>
-              <StateHandler.Loading>
-                <div className="text-center font-bold">Loading...</div>
-              </StateHandler.Loading>
-              <StateHandler.Error>
-                <div className="flex flex-col items-center py-4">
-                  <h1 className="font-bold mb-4">Error in getting articles!</h1>
-                  <button
-                    className="button-md bg-gray-50 border border-gray-100"
-                    onClick={() => window.location.reload()}
-                  >
-                    <span className="ic">refresh</span>
-                    Reload page
-                  </button>
-                </div>
-              </StateHandler.Error>
-              <StateHandler.Empty>
-                <div className="flex flex-col items-center">
-                  <h1 className="font-bold mb-4">Empty...</h1>
-                </div>
-              </StateHandler.Empty>
-              <StateHandler.Success>
-                <table className="w-full responsive-table">
-                  <thead className="text-left">
-                    <tr className="border-b border-gray-200 [&>th]:py-4 [&>th]:px-2 [&>th]:text-xs  [&>th]:font-[500] text-gray-500">
-                      <th>Created</th>
-                      <th>Updated</th>
-                      <th>Title</th>
-                      <th>Content</th>
-                    </tr>
-                  </thead>
-                  <tbody className="sm:divide-y sm:divide-gray-200 text-left">
-                    {rows}
-                  </tbody>
-                </table>
-              </StateHandler.Success>
-            </StateHandler>
+        <div className="flex flex-col p-4">
+          <h1 className="font-bold text-xl px-4 mb-4">
+            Manage articles ({totalArticles})
+          </h1>
+          <button
+            className="button-md bg-accent bg-opacity-20 text-accent mb-4"
+            onClick={() => setShowCreateArticleModal(true)}
+          >
+            <span className="ic">add</span>
+            Create article
+          </button>
+          <div className="mx-auto w-full">
+            <div className="border border-gray-200 px-4 rounded-lg">
+              <StateHandler state={{ error, loading, length: articles.length }}>
+                <StateHandler.Loading>
+                  <div className="text-center font-bold">Loading...</div>
+                </StateHandler.Loading>
+                <StateHandler.Error>
+                  <div className="flex flex-col items-center py-4">
+                    <h1 className="font-bold mb-4">
+                      Error in getting articles!
+                    </h1>
+                    <button
+                      className="button-md bg-gray-50 border border-gray-100"
+                      onClick={() => window.location.reload()}
+                    >
+                      <span className="ic">refresh</span>
+                      Reload page
+                    </button>
+                  </div>
+                </StateHandler.Error>
+                <StateHandler.Empty>
+                  <div className="flex flex-col items-center">
+                    <h1 className="font-bold mb-4">Empty...</h1>
+                  </div>
+                </StateHandler.Empty>
+                <StateHandler.Success>
+                  <ArticlesTable
+                    articles={articles}
+                    setArticle={setArticle}
+                    setShowEditModal={setShowEditArticleModal}
+                    setShowDeleteModal={setShowDeleteArticleModal}
+                  />
+                </StateHandler.Success>
+              </StateHandler>
+            </div>
+            <Pagination
+              itemsPerPage={articlesPerPage}
+              totalItems={totalArticles}
+              currentPage={currentPage}
+            />
           </div>
-          <Pagination
-            itemsPerPage={articlesPerPage}
-            totalItems={totalArticles}
-            currentPage={currentPage}
-          />
         </div>
       </div>
-      <Modal
-        title="Create Article"
-        openState={[showCreateArticleModal, setShowCreateArticleModal]}
-      >
-        <form className="flex flex-col w-full max-w-md gap-4">
-          <label htmlFor="title">
-            <div className="text-xs text-gray-600 mb-2 ml-2">Title</div>
-            <input
-              className="input w-full"
-              id="title"
-              type="text"
-              placeholder="Title"
-              value={newArticle.title}
-              onChange={(e) =>
-                setNewArticle({ ...newArticle, title: e.target.value })
-              }
-            />
-          </label>
-          <label htmlFor="content">
-            <div className="text-xs text-gray-600 mb-2 ml-2">Content</div>
-            <textarea
-              className="textarea w-full"
-              id="content"
-              placeholder="Text"
-              value={newArticle.content}
-              onChange={(e) =>
-                setNewArticle({ ...newArticle, content: e.target.value })
-              }
-            />
-          </label>
-          <div className="flex gap-4 max-sm:flex-col">
-            <button
-              className="button-md bg-accent bg-opacity-20 text-accent w-full disabled:opacity-50"
-              onClick={createArticle}
-              disabled={isConfirmCreateDisabled}
-            >
-              Create article
-              <span className="ic">east</span>
-            </button>
-            <button
-              className="button-md bg-red-50 text-red-400"
-              onClick={() => setShowCreateArticleModal(false)}
-            >
-              Cancel
-              <span className="ic">close</span>
-            </button>
-          </div>
-        </form>
-      </Modal>
-    </div>
+    </>
   );
 }
 
