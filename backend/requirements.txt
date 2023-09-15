@@ -1,0 +1,9 @@
+fastapi==0.103.1
+pydantic==2.3.0
+uvicorn==0.23.2
+starlette==0.27.0
+bcrypt==4.0.1
+tortoise-orm
+aerich
+python-jose
+python-multipart
