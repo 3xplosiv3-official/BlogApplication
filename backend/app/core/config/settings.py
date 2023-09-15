@@ -19,6 +19,10 @@ class Settings(BaseSettings):
 
         DEFAULT_ADMIN_USERNAME (str): Default admin username.
         DEFAULT_ADMIN_PASSWORD (str): Default admin password.
+
+        SERVER_HOST (str): Host of the uvicorn server.
+        SERVER_PORT (int): Port of the uvicorn server.
+
     """
 
     PROJECT_NAME: str = "ENIGMA BLOG APPLICATION"
@@ -34,6 +38,9 @@ class Settings(BaseSettings):
 
     DEFAULT_ADMIN_USERNAME: str = 'admin'
     DEFAULT_ADMIN_PASSWORD: str = 'admin1'
+
+    SERVER_HOST: str = '0.0.0.0'
+    SERVER_PORT: int = 8228
 
     class Config:
         case_sensitive = True
