@@ -17,11 +17,17 @@ import "@fontsource/ibm-plex-sans/700.css";
 
 // Material Icons
 import "@fontsource-variable/material-symbols-rounded";
+import ToasterProvider from "./components/Context/ToasterContext.tsx";
+import UserProvider from "./components/Context/UserContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <UserProvider>
+        <ToasterProvider>
+          <App />
+        </ToasterProvider>
+      </UserProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

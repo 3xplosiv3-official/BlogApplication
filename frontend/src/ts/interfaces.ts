@@ -1,3 +1,5 @@
+import { TUser } from "./types";
+
 export interface IUser {
     id: number;
     isAdmin: number;
@@ -5,30 +7,43 @@ export interface IUser {
     token: string;
 }
 
-export interface IBaseArticle {
-    title: string;
-    content: string;
+export interface IUserContext {
+    user: TUser;
+    setUser: (user: TUser) => void;
 }
 
-export interface IArticle extends IBaseArticle {
-    id: number;
-}
 
-export interface IBaseComment {
-    createdAt: string;
-    content: string;
-}
-
-export interface IComment extends IBaseComment {
-    id: number;
-}
-
-export interface ICredentials {
+export interface IUserResponse {
+    user_id: number;
     username: string;
-    password: string;
+    access_token: string;
+    status: number;
 }
 
 export interface IToast {
     message: string | number;
     type: number;
+}
+
+export interface IToasterContext {
+    toasts: IToast[];
+    setToasts: (toasts: IToast[]) => void;
+    addToast: (message: string, type: number) => void;
+}
+
+export interface IArticle {
+    id: number;
+    title: string;
+    content: string;
+}
+
+export interface IComment {
+    id: number;
+    createdAt: string;
+    content: string;
+}
+
+export interface ICredentials {
+    username: string;
+    password: string;
 }

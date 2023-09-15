@@ -1,7 +1,7 @@
 import { IArticle } from "../../ts/interfaces";
 import { useContext } from "react";
-import { UserContext } from "../../App";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../Context/UserContext";
 
 // Props Interface
 interface IProps {
@@ -18,7 +18,7 @@ function Articles({
   setShowDeleteModal,
 }: IProps) {
   // Context
-  const user = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
   // Navigate
   const navigate = useNavigate();
@@ -81,7 +81,9 @@ function Articles({
             <div className="inline-block">
               <button
                 className="font-semibold flex items-center gap-1"
-                onClick={() => handleReadMore(article.id)}
+                onClick={() => {
+                  handleReadMore(article.id);
+                }}
               >
                 Read more
                 <span className="ic">east</span>

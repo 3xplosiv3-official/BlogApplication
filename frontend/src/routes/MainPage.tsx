@@ -1,18 +1,19 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import Articles from "../components/Articles/Articles";
-import { IArticle, IToast } from "../ts/interfaces";
+import { IArticle } from "../ts/interfaces";
 import axios, { AxiosError } from "axios";
 import StateHandler from "../components/StateHandler/StateHandler";
 import { useLocation } from "react-router-dom";
 import EditArticleModal from "../components/Admin/EditArticleModal";
 import DeleteArticleModal from "../components/Admin/DeleteArticleModal";
-import Toaster from "../components/StateHandler/Toaster";
-import { UserContext } from "../App";
 import Pagination from "../components/Pagination";
+import { UserContext } from "../components/Context/UserContext";
+import { ToasterContext } from "../components/Context/ToasterContext";
 
 function MainPage() {
   // Context
-  const user = useContext(UserContext);
+  const { user } = useContext(UserContext);
+  const { addToast } = useContext(ToasterContext);
 
   // Use Location
   const location = useLocation();
@@ -20,35 +21,30 @@ function MainPage() {
   // States
   const [articles, setArticles] = useState<IArticle[]>([]);
   const [article, setArticle] = useState<IArticle | null>(null);
-  const [totalArticles, setTotalArticles] = useState(0);
+  const [totalArticles, setTotalArticles] = useState<number>(0);
 
   const [error, setError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [showDeleteArticleModal, setShowDeleteArticleModal] = useState(false);
-  const [showEditArticleModal, setShowEditArticleModal] = useState(false);
-
-  const [messages, setMessages] = useState<IToast[]>([]);
+  const [showDeleteArticleModal, setShowDeleteArticleModal] =
+    useState<boolean>(false);
+  const [showEditArticleModal, setShowEditArticleModal] =
+    useState<boolean>(false);
 
   // Constants
   const queryParams = new URLSearchParams(location.search);
-  const page = queryParams.get("page") || "1";
-  const limit = queryParams.get("limit") || "12";
+  const page = queryParams.get("page") ?? "1";
+  const limit = queryParams.get("limit") ?? "12";
 
   const currentPage = parseInt(page);
   const articlesPerPage = parseInt(limit);
 
-  // Add Toaster message
-  const addMessage = useCallback(
-    (message: string | number, type: number = 1) => {
-      setMessages([...messages, { message, type }]);
-    },
-    [messages]
-  );
-
   // Manage articles
   const deleteArticle = async () => {
-    if (!article) return console.error("No article!");
+    if (!article) {
+      console.error("No article!");
+      return;
+    }
 
     const { id } = article;
 
@@ -60,11 +56,11 @@ function MainPage() {
       });
 
       setArticles(articles.filter((x) => x.id !== id));
-      addMessage("Successfully deleted article", 1);
+      addToast("Successfully deleted article", 1);
       setShowDeleteArticleModal(false);
     } catch (error) {
       const err = error as AxiosError;
-      addMessage(err.message, -1);
+      addToast(err.message, -1);
       console.error("Error in deleting article:", error);
     }
   };
@@ -90,11 +86,11 @@ function MainPage() {
         )
       );
 
-      addMessage("Successfully updated article", 1);
+      addToast("Successfully updated article", 1);
       setShowEditArticleModal(false);
     } catch (error) {
       const err = error as AxiosError;
-      addMessage(err.message, -1);
+      addToast(err.message, -1);
       console.error("Error in updating article:", error);
     }
   };
@@ -146,7 +142,6 @@ function MainPage() {
 
   return (
     <>
-      <Toaster messages={messages} setMessages={setMessages} />
       <Modals />
       <div className="flex flex-col p-4">
         <h1 className="font-bold text-xl px-4 mb-4">

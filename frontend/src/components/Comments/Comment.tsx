@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { IComment } from "../../ts/interfaces";
 import Modal from "../Modal";
-import { UserContext } from "../../App";
+import { UserContext } from "../Context/UserContext";
 
 //Props Interface
 interface IProps {
@@ -11,7 +11,7 @@ interface IProps {
 
 function Comment({ onDeleteComment, comment }: IProps) {
   // Context
-  const user = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
   // States
   const [showDeleteModal, setShowDeleteModal] = useState(false);

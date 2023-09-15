@@ -40,9 +40,8 @@ function EditArticleModal({
   // Hooks
   useEffect(() => {
     if (
-      !editedArticle ||
       (article?.title === editedArticle.title &&
-        article?.content === editedArticle.content) ||
+        article.content === editedArticle.content) ||
       !editedArticle.title ||
       !editedArticle.content
     ) {

@@ -4,7 +4,7 @@ import Modal from "../Modal";
 interface IProps {
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
-  deleteArticle: () => void;
+  deleteArticle: () => Promise<void>;
 }
 
 function DeleteArticleModal({
@@ -18,13 +18,17 @@ function DeleteArticleModal({
       <div className="flex gap-2 justify-end mt-4">
         <button
           className="button-sm bg-red-100 text-red-400"
-          onClick={deleteArticle}
+          onClick={() => {
+            deleteArticle;
+          }}
         >
           Confirm
         </button>
         <button
           className="button-sm bg-gray-50 border border-gray-200"
-          onClick={() => setShowModal(false)}
+          onClick={() => {
+            setShowModal(false);
+          }}
         >
           Cancel
         </button>

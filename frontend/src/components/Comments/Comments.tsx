@@ -5,32 +5,26 @@ import {
   ChangeEvent,
   useContext,
 } from "react";
-import { IComment, IToast } from "../../ts/interfaces";
+import { IComment } from "../../ts/interfaces";
 import axios, { AxiosError } from "axios";
 import StateHandler from "../StateHandler/StateHandler";
 import Comment from "./Comment";
-import { UserContext } from "../../App";
-import Toaster from "../StateHandler/Toaster";
+import { UserContext } from "../Context/UserContext";
+import { ToasterContext } from "../Context/ToasterContext";
 
 function Comments({ articleId }: { articleId: string | undefined }) {
   // Context
-  const user = useContext(UserContext);
+  const { user } = useContext(UserContext);
+  const { addToast } = useContext(ToasterContext);
 
   // States
-  const [error, setError] = useState<unknown | null>(null);
+  const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
-  const [messages, setMessages] = useState<IToast[]>([]);
 
   const [comments, setComments] = useState<IComment[]>([]);
   const [comment, setComment] = useState<string>("");
   const [isLeaveCommentDisabled, setIsLeaveCommentDisabled] =
     useState<boolean>(true);
-
-  // Add Toaster message
-  const addMessage = (message: string | number, type: number = 1) => {
-    setMessages([...messages, { message, type }]);
-  };
 
   // Get comments
   const getComments = useCallback(async () => {
@@ -65,11 +59,11 @@ function Comments({ articleId }: { articleId: string | undefined }) {
       );
 
       setComment("");
-      getComments();
-      addMessage("Successfully commented", 1);
+      await getComments();
+      addToast("Successfully commented", 1);
     } catch (error) {
       const err = error as AxiosError;
-      addMessage(err.message, -1);
+      addToast(err.message, -1);
       console.error("Error in getting comments:", error);
     } finally {
       setIsLeaveCommentDisabled(false);
@@ -85,11 +79,11 @@ function Comments({ articleId }: { articleId: string | undefined }) {
         },
       });
       setComments(comments.filter((x) => x.id !== id));
-      addMessage("Successfully deleted comment", 1);
+      addToast("Successfully deleted comment", 1);
       return true;
     } catch (error) {
       const err = error as AxiosError;
-      addMessage(err.message, -1);
+      addToast(err.message, -1);
       console.error("Error in deleting article:", error);
     }
   };
@@ -113,7 +107,6 @@ function Comments({ articleId }: { articleId: string | undefined }) {
 
   return (
     <div className="flex flex-col gap-4 py-4">
-      <Toaster messages={messages} setMessages={setMessages} />
       <span className="font-bold">Comments ({comments.length}):</span>
       <div className="flex items-center w-full bg-gray-50 p-2 gap-2 border rounded-xl sm:h-20 border-gray-100 max-sm:flex-col">
         <textarea

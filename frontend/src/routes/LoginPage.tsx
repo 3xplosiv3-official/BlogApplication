@@ -10,8 +10,9 @@ function LoginPage({
   const [data, setData] = useState({ username: "", password: "" });
 
   // Change handler
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setData({ ...data, [e.target.name]: e.target.value });
+  };
 
   return (
     <div className="flex flex-col items-center px-4">

@@ -2,6 +2,7 @@ import {
   ChangeEvent,
   Dispatch,
   SetStateAction,
+  SyntheticEvent,
   useEffect,
   useState,
 } from "react";
@@ -11,7 +12,7 @@ import { IArticle } from "../../ts/interfaces";
 interface IProps {
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
-  createArticle: (newArticle: Partial<IArticle>) => void;
+  createArticle: (newArticle: Partial<IArticle>) => Promise<void>;
 }
 
 function CreateArticleModal({
@@ -25,6 +26,11 @@ function CreateArticleModal({
     title: "",
     content: "",
   });
+
+  const handleCreateArticle = (e: SyntheticEvent) => {
+    e.preventDefault();
+    createArticle(newArticle);
+  };
 
   // Two-way binding
   const handleChange = (
@@ -50,10 +56,7 @@ function CreateArticleModal({
     <Modal title="Create Article" openState={[showModal, setShowModal]}>
       <form
         className="flex flex-col w-full max-w-md gap-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-          createArticle(newArticle);
-        }}
+        onSubmit={handleCreateArticle}
       >
         <label htmlFor="title">
           <div className="text-xs text-gray-600 mb-2 ml-2">Title</div>
@@ -86,7 +89,9 @@ function CreateArticleModal({
           </button>
           <button
             className="button-md bg-red-50 text-red-400"
-            onClick={() => setShowModal(false)}
+            onClick={() => {
+              setShowModal(false);
+            }}
           >
             Cancel
             <span className="ic">close</span>

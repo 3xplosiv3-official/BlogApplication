@@ -14,7 +14,7 @@ function ArticlePage() {
 
   // States
   const [article, setArticle] = useState<IArticle | null>(null);
-  const [error, setError] = useState<unknown | null>(null);
+  const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
 
   // Get articles
