@@ -26,7 +26,7 @@ git clone https://github.com/3xplosiv3-official/BlogApplication.git
 cd BlogApplication
 ```
 
-**1. Build and start docker containers.**
+**3. Build and start docker containers.**
 
 ```
 docker-compose up --build
